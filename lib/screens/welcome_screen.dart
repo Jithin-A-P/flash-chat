@@ -4,28 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static String ID = 'welcome_screen';
+  static const String ID = 'welcome_screen';
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-    );
-    controller.forward();
-    controller.addListener(() {
-      print(controller.value);
-    });
-  }
-
+class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
