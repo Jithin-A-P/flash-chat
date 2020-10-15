@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flash_chat/components/rounded_button.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String ID = 'registraion_screen';
@@ -16,6 +17,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   String email;
   String password;
+  bool showSpinner = false;
 
   @override
   void initState() {
@@ -27,63 +29,75 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              height: 200.0,
-              child: Image.asset('images/logo.png'),
-            ),
-            SizedBox(
-              height: 48.0,
-            ),
-            TextField(
-              keyboardType: TextInputType.emailAddress,
-              textAlign: TextAlign.center,
-              onChanged: (value) {
-                email = value;
-              },
-              decoration: kTextFieldDecorarion.copyWith(
-                hintText: 'Enter your email',
+      body: ModalProgressHUD(
+        inAsyncCall: showSpinner,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                height: 200.0,
+                child: Image.asset('images/logo.png'),
               ),
-            ),
-            SizedBox(
-              height: 8.0,
-            ),
-            TextField(
-                obscureText: true,
+              SizedBox(
+                height: 48.0,
+              ),
+              TextField(
+                keyboardType: TextInputType.emailAddress,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
-                  password = value;
+                  email = value;
                 },
                 decoration: kTextFieldDecorarion.copyWith(
-                  hintText: 'Enter your Password',
-                )),
-            SizedBox(
-              height: 24.0,
-            ),
-            RoundedButton(
-              title: 'Register',
-              color: Colors.blueAccent,
-              onPressed: () async {
-                try {
-                  final _newUser = await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                    email: email,
-                    password: password,
-                  );
-                  if (_newUser != null) {
-                    Navigator.pushNamed(context, ChatScreen.ID);
+                  hintText: 'Enter your email',
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                  obscureText: true,
+                  textAlign: TextAlign.center,
+                  onChanged: (value) {
+                    password = value;
+                  },
+                  decoration: kTextFieldDecorarion.copyWith(
+                    hintText: 'Enter your Password',
+                  )),
+              SizedBox(
+                height: 24.0,
+              ),
+              RoundedButton(
+                title: 'Register',
+                color: Colors.blueAccent,
+                onPressed: () async {
+                  setState(() {
+                    showSpinner = true;
+                  });
+                  try {
+                    final _newUser = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                    if (_newUser != null) {
+                      Navigator.pushNamed(context, ChatScreen.ID);
+                    }
+                    setState(() {
+                      showSpinner = false;
+                    });
+                  } catch (e) {
+                    print(e);
+                    setState(() {
+                      showSpinner = false;
+                    });
                   }
-                } catch (e) {
-                  print(e);
-                }
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
